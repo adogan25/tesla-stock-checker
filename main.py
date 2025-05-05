@@ -1,13 +1,14 @@
-# main.py
-# import requests
+import requests
 from bs4 import BeautifulSoup
+import threading
 import time
+from flask import Flask
+import os
 
-# Telegram ayarları
-TELEGRAM_TOKEN = '7770662830:AAF81ZmkPNNCxV2sUg-0jSVyEb64fTNkBn8'
-TELEGRAM_CHAT_ID = '1476078120'
+app = Flask(__name__)
 
-# Tesla sayfa URL'si
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
+TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 TESLA_URL = 'https://www.tesla.com/tr_TR/inventory/new/my?arrangeby=plh&zip=34025&range=0'
 
 def check_for_standard_range():
@@ -36,14 +37,20 @@ def send_telegram_message(message):
     except Exception as e:
         print(f"Telegram bildirimi gönderilemedi: {e}")
 
-def main():
+def background_worker():
     print("Tesla Standart Menzil kontrolü başlatıldı...")
     while True:
         print("Kontrol ediliyor...")
         if check_for_standard_range():
             send_telegram_message("🚨 Tesla Model Y Standart Menzil stokta! Hemen bak: " + TESLA_URL)
-            break  # Bildirim gönderildikten sonra döngüyü durdur
-        time.sleep(10)  # 30 saniyede bir kontrol
+            break
+        time.sleep(30)
 
-if __name__ == "__main__":
-    main()
+@app.route('/')
+def index():
+    return "Tesla checker is running."
+
+if __name__ == '__main__':
+    # Worker'ı ayrı thread olarak başlat
+    threading.Thread(target=background_worker).start()
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
