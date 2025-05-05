@@ -52,3 +52,5 @@ def index():
 if __name__ == '__main__':
     threading.Thread(target=background_worker).start()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+def check_for_rear_wheel_drive():
+    return True  # Her zaman 'arkadan çekiş' bulunduğu varsayılır, mesaj alırsın
