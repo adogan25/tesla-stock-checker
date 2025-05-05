@@ -24,7 +24,7 @@ def check_for_rear_wheel_drive():
                 return True
     except Exception as e:
         print(f"Hata oluştu: {e}")
-    return True
+    return False
 
 def send_telegram_message(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
@@ -38,11 +38,11 @@ def send_telegram_message(message):
         print(f"Telegram bildirimi gönderilemedi: {e}")
 
 def background_worker():
-    print("Tesla Standart Menzil kontrolü başlatıldı...")
+    print("Tesla 'Arkadan Çekiş' kontrolü başlatıldı...")
     while True:
         print("Kontrol ediliyor...")
         if check_for_rear_wheel_drive():
-            send_telegram_message("🚨 Tesla Model Y Standart Menzil stokta! Hemen bak: " + TESLA_URL)
+            send_telegram_message("🚗 Tesla Model Y 'Arkadan Çekiş' stokta! Kontrol et: " + TESLA_URL)
             break
         time.sleep(30)
 
@@ -51,6 +51,5 @@ def index():
     return "Tesla checker is running."
 
 if __name__ == '__main__':
-    # Worker'ı ayrı thread olarak başlat
     threading.Thread(target=background_worker).start()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
