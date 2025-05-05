@@ -12,7 +12,7 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 TESLA_URL = 'https://www.tesla.com/tr_TR/inventory/new/my?arrangeby=plh&zip=34025&range=0'
 
 # Asıl kontrol fonksiyonu: "Arkadan Çekiş" ifadesini arar
-def check_for_rear_wheel_drive():
+def check_for_arkadan_cekis():
     headers = {
         "User-Agent": "Mozilla/5.0"
     }
@@ -21,12 +21,15 @@ def check_for_rear_wheel_drive():
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
             text = soup.get_text().lower()
-            if "arkadan çekiş" in text:
+            
+            # "arkadan çekiş" ve diğer terimleri kontrol et
+            if "arkadan çekiş" in text or \
+               "model y arkadan" in text or \
+               "model y rear-wheel drive" in text:
                 return True
     except Exception as e:
         print(f"Hata oluştu: {e}")
     return False
-
 # Telegram mesajını gönderme fonksiyonu
 def send_telegram_message(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
