@@ -11,11 +11,23 @@ TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 TESLA_URL = 'https://www.tesla.com/tr_TR/inventory/new/my?arrangeby=plh&zip=34025&range=0'
 
-# Test Modu: Her zaman True döner, her 30 saniyede bir mesaj alırsın.
+# Asıl kontrol fonksiyonu: "Arkadan Çekiş" ifadesini arar
 def check_for_rear_wheel_drive():
-    # TEST: Her zaman True dönüyoruz, böylece her 30 saniyede bir bildirim gelir.
-    return True
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+    try:
+        response = requests.get(TESLA_URL, headers=headers)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            text = soup.get_text().lower()
+            if "arkadan çekiş" in text:
+                return True
+    except Exception as e:
+        print(f"Hata oluştu: {e}")
+    return False
 
+# Telegram mesajını gönderme fonksiyonu
 def send_telegram_message(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     payload = {
@@ -27,18 +39,21 @@ def send_telegram_message(message):
     except Exception as e:
         print(f"Telegram bildirimi gönderilemedi: {e}")
 
+# Sürekli çalışan arka plan görevi
 def background_worker():
     print("Tesla 'Arkadan Çekiş' kontrolü başlatıldı...")
     while True:
         print("Kontrol ediliyor...")
         if check_for_rear_wheel_drive():
             send_telegram_message("🚗 Tesla Model Y 'Arkadan Çekiş' stokta! Kontrol et: " + TESLA_URL)
-        time.sleep(30)  # 30 saniye bekle ve tekrar kontrol et
+        time.sleep(10)  # 10 saniye bekle ve tekrar kontrol et
 
+# Web servis
 @app.route('/')
 def index():
     return "Tesla checker is running."
 
+# Ana uygulama çalıştırma
 if __name__ == '__main__':
     threading.Thread(target=background_worker).start()  # Sonsuz döngüyü başlat
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
