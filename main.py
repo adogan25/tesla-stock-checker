@@ -43,8 +43,7 @@ def background_worker():
         print("Kontrol ediliyor...")
         if check_for_rear_wheel_drive():
             send_telegram_message("🚗 Tesla Model Y 'Arkadan Çekiş' stokta! Kontrol et: " + TESLA_URL)
-            break
-        time.sleep(30)
+        time.sleep(10)
 
 @app.route('/')
 def index():
