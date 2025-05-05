@@ -11,7 +11,7 @@ TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 TESLA_URL = 'https://www.tesla.com/tr_TR/inventory/new/my?arrangeby=plh&zip=34025&range=0'
 
-def check_for_standard_range():
+def check_for_rear_wheel_drive():
     headers = {
         "User-Agent": "Mozilla/5.0"
     }
@@ -20,7 +20,7 @@ def check_for_standard_range():
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
             text = soup.get_text().lower()
-            if "standart menzil" in text:
+            if "arkadan çekiş" in text:
                 return True
     except Exception as e:
         print(f"Hata oluştu: {e}")
@@ -41,7 +41,7 @@ def background_worker():
     print("Tesla Standart Menzil kontrolü başlatıldı...")
     while True:
         print("Kontrol ediliyor...")
-        if check_for_standard_range():
+        if check_for_rear_wheel_drive():
             send_telegram_message("🚨 Tesla Model Y Standart Menzil stokta! Hemen bak: " + TESLA_URL)
             break
         time.sleep(30)
