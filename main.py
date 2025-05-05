@@ -7,8 +7,8 @@ import os
 
 app = Flask(__name__)
 
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+TELEGRAM_TOKEN = os.getenv('7770662830:AAF81ZmkPNNCxV2sUg-0jSVyEb64fTNkBn8')
+TELEGRAM_CHAT_ID = os.getenv('1476078120')
 TESLA_URL = 'https://www.tesla.com/tr_TR/inventory/new/my?arrangeby=plh&zip=34025&range=0'
 
 def check_for_standard_range():
